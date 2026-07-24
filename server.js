@@ -77,7 +77,12 @@ app.get('/api/productos', async (req, res) => {
       talles: p.Talles || "1, 2, 3, 4, 5",
       imagen: resolverUrlImagen(p.Foto),
       // 🔗 Extrae de forma limpia el enlace real a Tienda Nube
-      linkTiendaNube: extraerUrlReal(p.Link || p["Link"])
+      linkTiendaNube: extraerUrlReal(p.Link || p["Link"]),
+    
+      cintura: p.Cintura || p["Cintura"] || "-",
+      cadera: p.Cadera || p["Cadera"] || "-",
+      largo: p.Largo || p["Largo"] || "-"
+    
     }));
 
     res.json(productosFormateados);
