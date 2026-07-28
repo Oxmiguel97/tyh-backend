@@ -78,7 +78,7 @@ app.get('/api/productos', async (req, res) => {
   //  Link al Reel / Foto de Instagram (busca la columna en AppSheet y limpia el enlace)
   instagram: extraerUrlReal(p.Instagram || p["Instagram"] || p.instagram || p["Link Instagram"]),
 
-  talles: p.Talles || "1, 2, 3, 4, 5",
+  talles: p.Talles || "-",
   imagen: resolverUrlImagen(p.Foto),
   
   //  Link a Tienda Nube
