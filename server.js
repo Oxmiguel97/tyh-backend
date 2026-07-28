@@ -28,12 +28,10 @@ function resolverUrlImagen(foto) {
 function extraerUrlReal(linkCampo) {
   if (!linkCampo) return "#";
   
-  // Si AppSheet lo envía como objeto JSON directo
   if (typeof linkCampo === 'object' && linkCampo.Url) {
     return linkCampo.Url;
   }
   
-  // Si AppSheet lo envía como un texto JSON '{"Url":"https://..."}'
   if (typeof linkCampo === 'string') {
     if (linkCampo.startsWith('http')) return linkCampo;
     try {
@@ -47,6 +45,12 @@ function extraerUrlReal(linkCampo) {
   return "#";
 }
 
+// 🏠 RUTA RAÍZ (Para evitar "Cannot GET /" y probar rápidamente que el servidor está online)
+app.get('/', (req, res) => {
+  res.send('🚀 Servidor TyH Backend en Render funcionando correctamente');
+});
+
+// 📦 RUTA DE PRODUCTOS
 app.get('/api/productos', async (req, res) => {
   try {
     const respuesta = await fetch(APPSHEET_URL, {
@@ -72,25 +76,16 @@ app.get('/api/productos', async (req, res) => {
 
     const productosFormateados = listaProductos.map(p => ({
       sku: p.SKU || "Sin SKU",
-  nombre: p["Nombre Producto"] || p["Producto Categoria"] || "Sin Nombre",
-  precio: Number(p.Precio) || 0,
-
-  //  Link al Reel / Foto de Instagram (busca la columna en AppSheet y limpia el enlace)
-  instagram: extraerUrlReal(p.Instagram || p["Instagram"] || p.instagram || p["Link Instagram"]),
-
-  talles: p.Talles || "-",
-  imagen: resolverUrlImagen(p.Foto),
-  
-  //  Link a Tienda Nube
-  linkTiendaNube: extraerUrlReal(p.Link || p["Link"]),
-
-  //  Medidas
-  cintura: p.Cintura || p["Cintura"] || "-",
-  cadera: p.Cadera || p["Cadera"] || "-",
-  largo: p.Largo || p["Largo"] || "-"
-    
+      nombre: p["Nombre Producto"] || p["Producto Categoria"] || "Sin Nombre",
+      precio: Number(p.Precio) || 0,
+      instagram: extraerUrlReal(p.Instagram || p["Instagram"] || p.instagram || p["Link Instagram"]),
+      talles: p.Talles || "-",
+      imagen: resolverUrlImagen(p.Foto),
+      linkTiendaNube: extraerUrlReal(p.Link || p["Link"]),
+      cintura: p.Cintura || p["Cintura"] || "-",
+      cadera: p.Cadera || p["Cadera"] || "-",
+      largo: p.Largo || p["Largo"] || "-"
     }));
-
 
     res.json(productosFormateados);
 
