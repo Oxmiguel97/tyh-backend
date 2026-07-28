@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -7,9 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 // 📌 CONFIGURACIÓN DE APPSHEET
-const APPSHEET_APP_ID = "5bbfec63-58d6-44d9-9d06-432ddce96ba2"; 
+const APPSHEET_APP_ID = process.env.APPSHEET_APP_ID;
+const APPSHEET_ACCESS_KEY = process.env.APPSHEET_ACCESS_KEY; 
 const APPSHEET_APP_NAME = "GestióndeVentaseInventarioApp-655115683"; 
-const APPSHEET_ACCESS_KEY = "V2-NPz2u-A6My7-g7waS-LA9Pw-Pi1jQ-nAEJ4-ecTB0-Y5Wyz"; // 👈 Tu Access Key real
 const NOMBRE_TABLA = "Producto"; 
 
 const APPSHEET_URL = `https://api.appsheet.com/api/v2/apps/${APPSHEET_APP_ID}/tables/${NOMBRE_TABLA}/Action`;
@@ -71,19 +72,25 @@ app.get('/api/productos', async (req, res) => {
 
     const productosFormateados = listaProductos.map(p => ({
       sku: p.SKU || "Sin SKU",
-      nombre: p["Nombre Producto"] || p["Producto Categoria"] || "Sin Nombre",
-      precio: Number(p.Precio) || 0,
-      color: p.Color || "Negro",
-      talles: p.Talles || "1, 2, 3, 4, 5",
-      imagen: resolverUrlImagen(p.Foto),
-      // 🔗 Extrae de forma limpia el enlace real a Tienda Nube
-      linkTiendaNube: extraerUrlReal(p.Link || p["Link"]),
-    
-      cintura: p.Cintura || p["Cintura"] || "-",
-      cadera: p.Cadera || p["Cadera"] || "-",
-      largo: p.Largo || p["Largo"] || "-"
+  nombre: p["Nombre Producto"] || p["Producto Categoria"] || "Sin Nombre",
+  precio: Number(p.Precio) || 0,
+
+  //  Link al Reel / Foto de Instagram (busca la columna en AppSheet y limpia el enlace)
+  instagram: extraerUrlReal(p.Instagram || p["Instagram"] || p.instagram || p["Link Instagram"]),
+
+  talles: p.Talles || "1, 2, 3, 4, 5",
+  imagen: resolverUrlImagen(p.Foto),
+  
+  //  Link a Tienda Nube
+  linkTiendaNube: extraerUrlReal(p.Link || p["Link"]),
+
+  //  Medidas
+  cintura: p.Cintura || p["Cintura"] || "-",
+  cadera: p.Cadera || p["Cadera"] || "-",
+  largo: p.Largo || p["Largo"] || "-"
     
     }));
+
 
     res.json(productosFormateados);
 
